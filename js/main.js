@@ -2,14 +2,17 @@
 
     var handler     = document.getElementById('handle');
     var counter     = document.getElementById('count');
+    var maxIdT      = document.getElementById('maxId');
     var requester   = document.getElementById('request');
     var progressBar = document.getElementById('bar');
     var textArea    = document.getElementById('texto');
 
+    maxIdT.value = '-1';
+
     requester.addEventListener("click", function(){
         progressBar.style.display = "block";
         textArea.value = '';
-        getTweets(handler.value, parseInt(counter.value));
+        getTweets(handler.value, parseInt(counter.value), maxIdT.value);
     });
 
     /**
@@ -20,8 +23,8 @@
      *
      * @returns {undefined}
      */
-    function getTweets(handle, count) {
-        makeRequest('http://localhost:8000/tweets?handle=' + handle + '&count=' + count, function(json) {
+    function getTweets(handle, count, maxId) {
+        makeRequest('http://localhost:8000/tweets?handle=' + handle + '&count=' + count + '&max_id=' + maxId, function(json) {
             var main = document.getElementById('main');
 
             main.innerHTML = '<br>Tweets Retrieved: ' + json.tweets.length + '<br><br>';
@@ -30,6 +33,9 @@
                 textArea.value += element.text + "\n";
                 progressBar.setAttribute('value', (0.5 + index / array.length) + '');
             });
+
+            maxIdT.value = json.tweets[json.tweets.length - 1].id;
+            console.log(json.tweets[json.tweets.length - 1].id);
 
             progressBar.style.display = "none";
         }, function() {
